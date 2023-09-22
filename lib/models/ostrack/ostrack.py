@@ -12,6 +12,8 @@ from torch.nn.modules.transformer import _get_clones
 from lib.models.layers.head import build_box_head
 from lib.models.ostrack.vit import vit_base_patch16_224
 from lib.models.ostrack.vit_ce import vit_large_patch16_224_ce, vit_base_patch16_224_ce
+from lib.models.ostrack.vit_mff import vit_base_patch16_224_mff
+from lib.models.ostrack.vit_mff_direct import vit_base_patch16_224_mffd
 from lib.utils.box_ops import box_xyxy_to_cxcywh
 
 
@@ -119,6 +121,20 @@ def build_ostrack(cfg, training=True):
                                             ce_keep_ratio=cfg.MODEL.BACKBONE.CE_KEEP_RATIO,
                                             )
 
+        hidden_dim = backbone.embed_dim
+        patch_start_index = 1
+        
+    elif cfg.MODEL.BACKBONE.TYPE == 'vit_base_patch16_224_mff':
+        backbone = vit_base_patch16_224_mff(pretrained, drop_path_rate=cfg.TRAIN.DROP_PATH_RATE,
+                                        mff_loc=cfg.MODEL.BACKBONE.MFF_LOC,
+                                        )
+        hidden_dim = backbone.embed_dim
+        patch_start_index = 1
+    
+    elif cfg.MODEL.BACKBONE.TYPE == 'vit_base_patch16_224_mffd':
+        backbone = vit_base_patch16_224_mffd(pretrained, drop_path_rate=cfg.TRAIN.DROP_PATH_RATE,
+                                           mff_loc=cfg.MODEL.BACKBONE.MFF_LOC,
+                                           )
         hidden_dim = backbone.embed_dim
         patch_start_index = 1
 
